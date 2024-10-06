@@ -1,0 +1,41 @@
+# These are basic settings allowing us to successfully connect to a database.
+# - In order to apply this, "database.enabled" key must be set to true.
+# - Make sure to correct the credentials, in order to avoid any errors. (For example wrong password, or hostname)
+database:
+  type: "mysql"
+  enabled: false
+  address: "localhost:3306"
+  database: "disguise"
+  username: "root"
+  password: ""
+
+  # HikariCP is a library which allows us to control and cache the connections to the database
+  # These settings should not be changed, unless you have an idea of what you are doing
+  # - More about Hikari: https://github.com/brettwooldridge/HikariCP
+  hikari-pool:
+    # This property controls the maximum number of milliseconds that a client (that's you) will wait for a connection from the pool.
+    # Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
+    connection-timeout: 30000 # This means that the timeout will be 30 seconds
+
+    # This property controls how frequently HikariCP will attempt to keep a connection alive,
+    # in order to prevent it from being timed out by the database or network infrastructure.
+    # When the time arrives for a "keep-alive" against a given connection, that connection will be removed from the pool, "pinged", and then returned to the pool.
+    # Typically, the duration out-of-the-pool should be measured in single digit milliseconds or even sub-millisecond, and therefore should have little or no noticeable performance impact.
+    # The minimum allowed value is 30000ms (30 seconds), but a value in the range of minutes is most desirable. Default: 0 (disabled)
+    keep-alive-time: 0
+
+    # This property controls the minimum number of idle connections that HikariCP tries to maintain in the pool.
+    # For maximum performance and responsiveness to spike demands, we recommend not setting this value and instead allowing HikariCP to act as a fixed size connection pool.
+    # Default: same as maximumPoolSize
+    minimum-idle: 10
+
+    # This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections.
+    # Basically this value will determine the maximum number of actual connections to the database backend.
+    # Default: 10
+    maximum-pool-size: 10
+
+    # This property controls the maximum lifetime of a connection in the pool.
+    # An in-use connection will never be retired, only when it is closed will it then be removed.
+    # Minimum allowed value is 30000ms (30 seconds).
+    # Default: 1800000 (30 minutes)
+    maximum-lifetime: 1800000
