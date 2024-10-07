@@ -5,6 +5,8 @@ import io.pinger.groups.group.AssignedGroup;
 import io.pinger.groups.group.Group;
 import io.pinger.groups.instance.Instances;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +24,14 @@ public class User {
 
     public User(UUID id) {
         this(id, new ArrayList<>());
+    }
+
+    public void addAssignedGroups(AssignedGroup... groups) {
+        this.addAssignedGroups(Arrays.asList(groups));
+    }
+
+    public void addAssignedGroups(Collection<AssignedGroup> groups) {
+        this.assignedGroups.addAll(groups);
     }
 
     public List<AssignedGroup> getAssignedGroups() {
@@ -44,12 +54,6 @@ public class User {
         return Bukkit.getPlayer(this.id);
     }
 
-    /**
-     * This method sends a message within the messages.yml file of the plugin.
-     *
-     * @param key the key of the message
-     */
-
     public void sendMessage(String key) {
         final MessageConfiguration messages = Instances.get(MessageConfiguration.class);
         if (this.toPlayer() == null || !messages.has(key)) {
@@ -60,16 +64,6 @@ public class User {
         final String message = messages.of(key);
         this.toPlayer().sendMessage(message);
     }
-
-    /**
-     * This method sends a formatted message from the configuration file
-     * to this player.
-     * <p>
-     * Do not do this if you want to send a message that is not within the messages.yml file.
-     *
-     * @param key    they key from the config
-     * @param format the objects to format
-     */
 
     public void sendMessage(String key, Object... format) {
         final MessageConfiguration messages = Instances.get(MessageConfiguration.class);

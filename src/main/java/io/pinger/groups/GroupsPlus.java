@@ -5,24 +5,25 @@ import io.pinger.groups.config.MessageConfiguration;
 import io.pinger.groups.dependenies.DependencyManager;
 import io.pinger.groups.group.GroupRepository;
 import io.pinger.groups.instance.Instances;
+import io.pinger.groups.listener.PlayerListener;
 import io.pinger.groups.logger.SpigotPluginLogger;
 import io.pinger.groups.storage.Storage;
 import io.pinger.groups.storage.StorageFactory;
 import io.pinger.groups.storage.config.StorageConfig;
 import io.pinger.groups.storage.impl.StorageImplementation;
 import io.pinger.groups.storage.type.StorageType;
+import io.pinger.groups.user.UserManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class GroupsPlus extends JavaPlugin {
     private MessageConfiguration messageConfiguration;
     private GroupRepository groupRepository;
-    private DependencyManager dependencyManager;
+    private UserManager userManager;
     private SpigotPluginLogger logger;
     private Storage storage;
 
@@ -30,8 +31,8 @@ public class GroupsPlus extends JavaPlugin {
     public void onEnable() {
         Instances.register(this);
 
-        this.dependencyManager = new DependencyManager(this);
-        this.dependencyManager.loadDependencies();
+        final DependencyManager dependencyManager = new DependencyManager(this);
+        dependencyManager.loadDependencies();
 
         this.logger = new SpigotPluginLogger(this.getLogger());
         this.addDefaultConfig();
@@ -39,6 +40,9 @@ public class GroupsPlus extends JavaPlugin {
 
         this.groupRepository = new GroupRepository(this);
         this.messageConfiguration = new MessageConfiguration(this);
+        this.userManager = new UserManager(this);
+
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }
 
     @Override
@@ -48,12 +52,15 @@ public class GroupsPlus extends JavaPlugin {
         }
     }
 
+    public boolean isDatabaseEnabled() {
+        return this.storage != null;
+    }
+
     @NotNull
     public SpigotPluginLogger getPluginLogger() {
         return this.logger;
     }
 
-    @Nullable
     public Storage getStorage() {
         return this.storage;
     }
@@ -66,6 +73,11 @@ public class GroupsPlus extends JavaPlugin {
     @NotNull
     public MessageConfiguration getMessageConfiguration() {
         return this.messageConfiguration;
+    }
+
+    @NotNull
+    public UserManager getUserManager() {
+        return this.userManager;
     }
 
     private void addDefaultConfig() {

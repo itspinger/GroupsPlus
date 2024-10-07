@@ -24,8 +24,11 @@ public class GroupRepository {
         return this.groups.values();
     }
 
+    public void addGroup(Group group) {
+        this.groups.put(group.getName(), group);
+    }
+
     public Group findGroupByName(String name) {
         return this.groups.get(name);
     }
-
 }
