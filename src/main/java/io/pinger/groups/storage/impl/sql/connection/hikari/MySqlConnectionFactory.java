@@ -1,5 +1,6 @@
 package io.pinger.groups.storage.impl.sql.connection.hikari;
 
+import io.pinger.groups.processor.Processor;
 import io.pinger.groups.storage.config.StorageConfig;
 
 public class MySqlConnectionFactory extends HikariConnectionFactory {
@@ -22,5 +23,4 @@ public class MySqlConnectionFactory extends HikariConnectionFactory {
     protected String getDriverIdentifier() {
         return "mysql";
     }
-
 }

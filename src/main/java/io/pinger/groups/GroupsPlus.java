@@ -1,6 +1,8 @@
 package io.pinger.groups;
 
 import com.tchristofferson.configupdater.ConfigUpdater;
+import io.pinger.groups.group.GroupRepository;
+import io.pinger.groups.instance.Instances;
 import io.pinger.groups.logger.SpigotPluginLogger;
 import io.pinger.groups.storage.Storage;
 import io.pinger.groups.storage.StorageFactory;
@@ -16,14 +18,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GroupsPlus extends JavaPlugin {
+    private GroupRepository groupRepository;
     private SpigotPluginLogger logger;
     private Storage storage;
 
     @Override
     public void onEnable() {
+        Instances.register(this);
+
         this.logger = new SpigotPluginLogger(this.getLogger());
         this.addDefaultConfig();
         this.tryInitStorage();
+
+        this.groupRepository = new GroupRepository(this);
     }
 
     @Override
@@ -41,6 +48,11 @@ public class GroupsPlus extends JavaPlugin {
     @Nullable
     public Storage getStorage() {
         return this.storage;
+    }
+
+    @NotNull
+    public GroupRepository getGroupRepository() {
+        return this.groupRepository;
     }
 
     private void addDefaultConfig() {

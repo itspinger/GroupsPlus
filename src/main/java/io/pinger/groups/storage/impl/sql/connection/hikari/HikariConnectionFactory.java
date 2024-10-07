@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.pinger.groups.storage.config.StorageConfig;
 import io.pinger.groups.storage.impl.sql.connection.ConnectionFactory;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public abstract class HikariConnectionFactory implements ConnectionFactory {
     private final StorageConfig credentials;
@@ -44,6 +46,11 @@ public abstract class HikariConnectionFactory implements ConnectionFactory {
         if (this.source != null) {
             this.source.close();
         }
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        return this.source.getConnection();
     }
 
     private void setupJdbcUrl(HikariConfig config) {
