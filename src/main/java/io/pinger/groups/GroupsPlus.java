@@ -104,7 +104,6 @@ public class GroupsPlus extends JavaPlugin {
         final String password = section.getString("password");
 
         final ConfigurationSection pool = section.getConfigurationSection("hikari-pool");
-
         if (pool == null) {
             return new StorageConfig(address, database, username, password);
         }
