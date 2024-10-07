@@ -50,6 +50,6 @@ public class Storage {
     }
 
     public CompletableFuture<Group> getOrCreateGroup(String name) {
-        return this.future(() -> this.implementation.getOrCreateGroup(name));
+        return this.future(() -> this.implementation.createNewGroup(name));
     }
 }

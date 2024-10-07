@@ -6,6 +6,7 @@ import io.pinger.groups.instance.Instances;
 import io.pinger.groups.logger.PluginLogger;
 import io.pinger.groups.storage.impl.StorageImplementation;
 import io.pinger.groups.storage.impl.sql.connection.ConnectionFactory;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,16 +22,27 @@ public class SqlStorage implements StorageImplementation {
     private static final String DELETE_GROUP ="DELETE FROM groups WHERE name = ?;";
 
     private final GroupsPlus groupsPlus;
+    private final PluginLogger logger;
     private final ConnectionFactory connectionFactory;
 
     public SqlStorage(ConnectionFactory connectionFactory) {
         this.groupsPlus = Instances.getOrThrow(GroupsPlus.class);
+        this.logger = Instances.getOrThrow(PluginLogger.class);
         this.connectionFactory = connectionFactory;
     }
 
     @Override
     public void init() {
         this.connectionFactory.init();
+
+        final String resourceName = String.format("%s.sql", this.connectionFactory.getStorageType().getIdentifier());
+
+        this.logger.info("Trying to create default tables from file {}", resourceName);
+
+        final InputStream inputStream = this.groupsPlus.getResource(resourceName);
+        SqlStorageLoader.init(this.connectionFactory, inputStream);
+
+        this.logger.info("Successfully created default tables from file {}", resourceName);
     }
 
     @Override
