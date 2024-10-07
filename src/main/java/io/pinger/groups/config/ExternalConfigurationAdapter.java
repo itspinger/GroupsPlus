@@ -1,7 +1,6 @@
 package io.pinger.groups.config;
 
 import io.pinger.groups.GroupsPlus;
-import io.pinger.groups.instance.Instances;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +10,6 @@ import java.util.Map;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public abstract class ExternalConfigurationAdapter {
-    private final GroupsPlus plugin;
-    private final File file;
 
     protected YamlConfiguration configuration;
 
@@ -21,13 +18,12 @@ public abstract class ExternalConfigurationAdapter {
     }
 
     public ExternalConfigurationAdapter(GroupsPlus plugin, String name, boolean load) {
-        this.plugin = plugin;
-        this.file = new File(plugin.getDataFolder(), name);
-        this.configuration = YamlConfiguration.loadConfiguration(this.file);
+        final File file = new File(plugin.getDataFolder(), name);
+        this.configuration = YamlConfiguration.loadConfiguration(file);
 
         // If the load is false
         // We shouldn't replace if the file is not empty
-        if (!load && this.file.length() > 0) {
+        if (!load && file.length() > 0) {
             return;
         }
 
@@ -53,7 +49,7 @@ public abstract class ExternalConfigurationAdapter {
                 this.configuration.addDefault(entries.getKey(), entries.getValue());
             }
 
-            this.configuration.save(this.file);
+            this.configuration.save(file);
         } catch (IOException e) {
             plugin.getLogger().info("Failed to create a file with name " + name);
         }
