@@ -38,6 +38,14 @@ public class Instances {
         }
     }
 
+    public static void registerWithoutSuper(@NotNull Object instance) {
+        if (Instances.INSTANCES.containsKey(instance.getClass())) {
+            throw new IllegalStateException("Duplicate instance found for " + instance.getClass());
+        }
+
+        Instances.INSTANCES.put(instance.getClass(), instance);
+    }
+
     private static List<Class<?>> getAllInterfaces(@NotNull Class<?> clazz) {
         final Set<Class<?>> interfaces = new HashSet<>();
         while (clazz != null && !clazz.equals(Object.class)) {

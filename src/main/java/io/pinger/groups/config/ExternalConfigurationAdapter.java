@@ -1,6 +1,7 @@
 package io.pinger.groups.config;
 
 import io.pinger.groups.GroupsPlus;
+import io.pinger.groups.instance.Instances;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

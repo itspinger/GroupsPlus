@@ -1,12 +1,15 @@
 package io.pinger.groups.config;
 
 import io.pinger.groups.GroupsPlus;
+import io.pinger.groups.instance.Instances;
 import org.bukkit.ChatColor;
 
 public class MessageConfiguration extends ExternalConfigurationAdapter {
 
     public MessageConfiguration(GroupsPlus plugin) {
         super(plugin, "messages.yml", true);
+
+        Instances.registerWithoutSuper(this);
     }
 
     public static String color(String message) {
