@@ -2,6 +2,7 @@ package io.pinger.groups;
 
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.pinger.groups.config.MessageConfiguration;
+import io.pinger.groups.dependenies.DependencyManager;
 import io.pinger.groups.group.GroupRepository;
 import io.pinger.groups.instance.Instances;
 import io.pinger.groups.logger.SpigotPluginLogger;
@@ -21,12 +22,16 @@ import org.jetbrains.annotations.Nullable;
 public class GroupsPlus extends JavaPlugin {
     private MessageConfiguration messageConfiguration;
     private GroupRepository groupRepository;
+    private DependencyManager dependencyManager;
     private SpigotPluginLogger logger;
     private Storage storage;
 
     @Override
     public void onEnable() {
         Instances.register(this);
+
+        this.dependencyManager = new DependencyManager(this);
+        this.dependencyManager.loadDependencies();
 
         this.logger = new SpigotPluginLogger(this.getLogger());
         this.addDefaultConfig();
@@ -70,7 +75,7 @@ public class GroupsPlus extends JavaPlugin {
         try {
             ConfigUpdater.update(this, "config.yml", config, new ArrayList<>());
         } catch (Exception e) {
-            this.logger.error("Failed to update the config: " + e.getMessage());
+            this.logger.error("Failed to update the config", e);
         }
 
         this.logger.info("Successfully loaded the config.yml");

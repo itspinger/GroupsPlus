@@ -22,7 +22,7 @@ public class Storage {
         try {
             this.implementation.init();
         } catch (Exception e) {
-            this.logger.error("Failed to init storage implementation {}", e);
+            this.logger.error("Failed to init storage implementation", e);
         }
     }
 
@@ -30,7 +30,7 @@ public class Storage {
         try {
             this.implementation.shutdown();
         } catch (Exception e) {
-            this.logger.error("Failed to shutdown storage implementation {}", e);
+            this.logger.error("Failed to shutdown storage implementation", e);
         }
     }
 

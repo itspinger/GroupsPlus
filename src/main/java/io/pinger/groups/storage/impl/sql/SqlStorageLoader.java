@@ -18,13 +18,17 @@ public class SqlStorageLoader {
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             contents = reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            Instances.get(PluginLogger.class).error("Failed to read contents from source file ", e);
+            Instances.get(PluginLogger.class).error("Failed to read contents from source file", e);
             return;
         }
 
         final String[] queries = contents.split(";");
         try (final Connection connection = factory.getConnection()) {
             for (final String query : queries) {
+                if (query.trim().isEmpty()) {
+                    continue;
+                }
+
                 try (final PreparedStatement stat = connection.prepareStatement(query)) {
                     stat.execute();
                 }
