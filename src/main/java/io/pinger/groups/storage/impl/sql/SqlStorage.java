@@ -23,6 +23,8 @@ public class SqlStorage implements StorageImplementation {
     private static final String LOAD_USER = "SELECT * FROM gp_users WHERE uuid = ?;";
     private static final String SAVE_USER = "INSERT INTO gp_users(uuid) VALUES (?);";
     private static final String LOAD_ASSIGNED_GROUPS = "SELECT * FROM gp_users_groups JOIN gp_groups USING (name) WHERE uuid = ?;";
+    private static final String INSERT_ASSIGNED_GROUPS = "INSERT INTO gp_users_groups(uuid, name, expiresAt) VALUES (?, ?, ?);";
+    private static final String DELETE_SPECIFIC_ASSIGNED_GROUP = "DELETE FROM gp_users_groups WHERE uuid = ? AND name = ? AND expiresAt = ?;";
     private static final String DELETE_ASSIGNED_GROUPS = "DELETE FROM gp_users_groups WHERE name = ?;";
     private static final String LOAD_GROUPS = "SELECT * FROM gp_groups;";
     private static final String LOAD_SPECIFIC_GROUP = "SELECT * FROM gp_groups WHERE name = ?;";
@@ -102,6 +104,35 @@ public class SqlStorage implements StorageImplementation {
         }
 
         this.groupsPlus.getGroupRepository().overrideGroups(loadedGroups);
+    }
+
+    @Override
+    public void addGroupToUser(User user, Group group, long expiresAt) throws Exception {
+        try (final Connection connection = this.getConnection()) {
+            try (final PreparedStatement statement = connection.prepareStatement(INSERT_ASSIGNED_GROUPS)) {
+                statement.setString(1, user.getId().toString());
+                statement.setString(2, group.getName());
+                statement.setLong(3, expiresAt);
+                statement.executeUpdate();
+            }
+        }
+
+        final AssignedGroup newGroup = new AssignedGroup(user, group, expiresAt);
+        user.addAssignedGroups(newGroup);
+    }
+
+    @Override
+    public void removeGroupFromUser(User user, AssignedGroup group) throws Exception {
+        try (final Connection connection = this.getConnection()) {
+            try (final PreparedStatement statement = connection.prepareStatement(DELETE_SPECIFIC_ASSIGNED_GROUP)) {
+                statement.setString(1, user.getId().toString());
+                statement.setString(2, group.getGroup().getName());
+                statement.setLong(3, group.getExpiresAt());
+                statement.executeUpdate();
+            }
+        }
+
+        user.removeAssignedGroup(group);
     }
 
     @Override

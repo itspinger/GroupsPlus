@@ -4,8 +4,10 @@ import com.jonahseguin.drink.CommandService;
 import com.jonahseguin.drink.Drink;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.pinger.groups.commands.GroupManagerCommand;
+import io.pinger.groups.commands.GroupsCommand;
 import io.pinger.groups.commands.provider.GroupProvider;
 import io.pinger.groups.commands.provider.TimeArgumentProvider;
+import io.pinger.groups.commands.provider.UserProvider;
 import io.pinger.groups.config.MessageConfiguration;
 import io.pinger.groups.dependenies.DependencyManager;
 import io.pinger.groups.group.Group;
@@ -19,6 +21,7 @@ import io.pinger.groups.storage.config.StorageConfig;
 import io.pinger.groups.storage.impl.StorageImplementation;
 import io.pinger.groups.storage.type.StorageType;
 import io.pinger.groups.timer.Timer;
+import io.pinger.groups.user.User;
 import io.pinger.groups.user.UserManager;
 import java.io.File;
 import java.util.ArrayList;
@@ -80,7 +83,9 @@ public class GroupsPlus extends JavaPlugin {
         final CommandService service = Drink.get(this);
         service.bind(Group.class).toProvider(new GroupProvider(this));
         service.bind(Timer.class).toProvider(new TimeArgumentProvider());
+        service.bind(User.class).toProvider(new UserProvider(this));
         service.register(new GroupManagerCommand(this), "groupmanager", "gm");
+        service.register(new GroupsCommand(this), "groups");
         service.registerCommands();
     }
 

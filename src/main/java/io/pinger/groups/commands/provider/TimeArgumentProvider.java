@@ -24,8 +24,22 @@ public class TimeArgumentProvider extends DrinkProvider<Timer> {
     }
 
     @Override
+    public boolean allowNullArgument() {
+        return false;
+    }
+
+    @Override
     public @Nullable Timer provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws CommandExitMessage {
-        final String timeAsString = arg.get();
+        final StringBuilder builder = new StringBuilder(arg.get());
+        if (builder.isEmpty()) {
+            return null;
+        }
+
+        while (arg.getArgs().hasNext()) {
+            builder.append(" ").append(arg.getArgs().next());
+        }
+
+        final String timeAsString = builder.toString();
         final long seconds;
 
         try {

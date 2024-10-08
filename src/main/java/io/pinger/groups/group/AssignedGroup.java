@@ -38,6 +38,10 @@ public class AssignedGroup {
         return Timer.builder().timeTo(this.expiresAt).build();
     }
 
+    public long getExpiresAt() {
+        return this.expiresAt;
+    }
+
     public User getUser() {
         return this.user;
     }

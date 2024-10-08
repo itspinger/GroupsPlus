@@ -1,6 +1,5 @@
 package io.pinger.groups.storage.impl.sql.connection.hikari;
 
-import io.pinger.groups.processor.Processor;
 import io.pinger.groups.storage.config.StorageConfig;
 import io.pinger.groups.storage.type.StorageType;
 

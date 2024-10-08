@@ -39,3 +39,5 @@ database:
     # Minimum allowed value is 30000ms (30 seconds).
     # Default: 1800000 (30 minutes)
     maximum-lifetime: 1800000
+
+## The format for join message

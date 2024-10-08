@@ -1,5 +1,6 @@
 package io.pinger.groups.storage;
 
+import io.pinger.groups.group.AssignedGroup;
 import io.pinger.groups.group.Group;
 import io.pinger.groups.instance.Instances;
 import io.pinger.groups.logger.PluginLogger;
@@ -70,6 +71,20 @@ public class Storage {
     public CompletableFuture<Void> updateGroup(@NotNull Group group) {
         return this.future(() -> {
             this.implementation.saveGroup(group);
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> addGroupToUser(@NotNull User user, @NotNull Group group, long expiry) {
+        return this.future(() -> {
+            this.implementation.addGroupToUser(user, group, expiry);
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> removeGroupFromUser(@NotNull User user, @NotNull AssignedGroup group) {
+        return this.future(() -> {
+            this.implementation.removeGroupFromUser(user, group);
             return null;
         });
     }
