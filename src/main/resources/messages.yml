@@ -1,0 +1,12 @@
+group:
+  invalid-length: "&cGroup with name &e%s &ccannot be created, because it's invalid length."
+  create-failed: "&cFailed to create group, please try again later!"
+  exists: "&cGroup with the name &e%s &calready exists"
+  create-success: "&aSuccessfully created a group with name &e%s&a"
+  delete-failed: "&cFailed to delete group with name &e%s&c!"
+  delete-success: "&aSuccessfully deleted group with name &e%s&a!"
+  update-failed: "&cFailed to update group with name &e%s&c!"
+  update-success: "&aSuccessfully updated group with name &e%s&a!"
+  prefix-already-set: "&cThis group already has this exact prefix!"
+  prefix-invalid-length: "&cInvalid length for prefix &e%s&c!"
+  priority-already-set: "&cThis group already has this exact priority!"

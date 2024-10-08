@@ -56,7 +56,21 @@ public class Storage {
         });
     }
 
-    public CompletableFuture<Group> getOrCreateGroup(@NotNull String name) {
+    public CompletableFuture<Group> createNewGroup(@NotNull String name) {
         return this.future(() -> this.implementation.createNewGroup(name));
+    }
+
+    public CompletableFuture<Void> deleteGroup(@NotNull Group group) {
+        return this.future(() -> {
+            this.implementation.deleteGroup(group);
+            return null;
+        });
+    }
+
+    public CompletableFuture<Void> updateGroup(@NotNull Group group) {
+        return this.future(() -> {
+            this.implementation.saveGroup(group);
+            return null;
+        });
     }
 }

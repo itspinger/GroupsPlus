@@ -1,8 +1,14 @@
 package io.pinger.groups;
 
+import com.jonahseguin.drink.CommandService;
+import com.jonahseguin.drink.Drink;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import io.pinger.groups.commands.GroupManagerCommand;
+import io.pinger.groups.commands.provider.GroupProvider;
+import io.pinger.groups.commands.provider.TimeArgumentProvider;
 import io.pinger.groups.config.MessageConfiguration;
 import io.pinger.groups.dependenies.DependencyManager;
+import io.pinger.groups.group.Group;
 import io.pinger.groups.group.GroupRepository;
 import io.pinger.groups.instance.Instances;
 import io.pinger.groups.listener.PlayerListener;
@@ -12,6 +18,7 @@ import io.pinger.groups.storage.StorageFactory;
 import io.pinger.groups.storage.config.StorageConfig;
 import io.pinger.groups.storage.impl.StorageImplementation;
 import io.pinger.groups.storage.type.StorageType;
+import io.pinger.groups.timer.Timer;
 import io.pinger.groups.user.UserManager;
 import java.io.File;
 import java.util.ArrayList;
@@ -31,8 +38,7 @@ public class GroupsPlus extends JavaPlugin {
     public void onEnable() {
         Instances.register(this);
 
-        final DependencyManager dependencyManager = new DependencyManager(this);
-        dependencyManager.loadDependencies();
+        new DependencyManager(this).loadDependencies();
 
         this.logger = new SpigotPluginLogger(this.getLogger());
         this.addDefaultConfig();
@@ -42,7 +48,10 @@ public class GroupsPlus extends JavaPlugin {
         this.messageConfiguration = new MessageConfiguration(this);
         this.userManager = new UserManager(this);
 
+        this.loadAllGroups();
+
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        this.registerCommands();
     }
 
     @Override
@@ -50,6 +59,29 @@ public class GroupsPlus extends JavaPlugin {
         if (this.storage != null) {
             this.storage.shutdown();
         }
+    }
+
+    private void loadAllGroups() {
+        if (!this.isDatabaseEnabled()) {
+            return;
+        }
+
+        try {
+            this.storage.loadAllGroups().get();
+        } catch (Exception e) {
+            this.logger.info("Failed to load all groups from the database ", e);
+            return;
+        }
+
+        this.logger.info("Successfully loaded {} groups from the database", this.groupRepository.getAllGroups().size());
+    }
+
+    private void registerCommands() {
+        final CommandService service = Drink.get(this);
+        service.bind(Group.class).toProvider(new GroupProvider(this));
+        service.bind(Timer.class).toProvider(new TimeArgumentProvider());
+        service.register(new GroupManagerCommand(this), "groupmanager", "gm");
+        service.registerCommands();
     }
 
     public boolean isDatabaseEnabled() {

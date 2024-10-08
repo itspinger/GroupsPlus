@@ -26,6 +26,10 @@ public class User {
         this(id, new ArrayList<>());
     }
 
+    public void unloadGroupIfMatches(Group group) {
+        this.assignedGroups.removeIf(assignedGroup -> assignedGroup.getGroup().equals(group));
+    }
+
     public void addAssignedGroups(AssignedGroup... groups) {
         this.addAssignedGroups(Arrays.asList(groups));
     }

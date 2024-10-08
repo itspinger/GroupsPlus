@@ -23,9 +23,10 @@ public class SqlStorage implements StorageImplementation {
     private static final String LOAD_USER = "SELECT * FROM gp_users WHERE uuid = ?;";
     private static final String SAVE_USER = "INSERT INTO gp_users(uuid) VALUES (?);";
     private static final String LOAD_ASSIGNED_GROUPS = "SELECT * FROM gp_users_groups JOIN gp_groups USING (name) WHERE uuid = ?;";
+    private static final String DELETE_ASSIGNED_GROUPS = "DELETE FROM gp_users_groups WHERE name = ?;";
     private static final String LOAD_GROUPS = "SELECT * FROM gp_groups;";
     private static final String LOAD_SPECIFIC_GROUP = "SELECT * FROM gp_groups WHERE name = ?;";
-    private static final String CREATE_GROUP = "INSERT INTO gp_roups(name, prefix, priority) VALUES (?, ?, ?);";
+    private static final String CREATE_GROUP = "INSERT INTO gp_groups(name, prefix, priority) VALUES (?, ?, ?);";
     private static final String UPDATE_GROUP = "UPDATE gp_groups SET prefix = ?, priority = ? WHERE name = ?;";
     private static final String DELETE_GROUP ="DELETE FROM gp_groups WHERE name = ?;";
 
@@ -123,14 +124,11 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void saveGroup(Group group) throws Exception {
-        if (!this.existsGroup(group)) {
-            return;
-        }
-
         try (final Connection connection = this.getConnection()) {
             try (final PreparedStatement statement = connection.prepareStatement(UPDATE_GROUP)) {
                 statement.setString(1, group.getPrefix());
                 statement.setLong(2, group.getPriority());
+                statement.setString(3, group.getName());
                 statement.executeUpdate();
             }
         }
@@ -138,15 +136,23 @@ public class SqlStorage implements StorageImplementation {
 
     @Override
     public void deleteGroup(Group group) throws Exception {
-        if (!this.existsGroup(group)) {
-            return;
-        }
-
         try (final Connection connection = this.getConnection()) {
+            // Delete all groups bound to a player first
+            this.deleteAssignedGroups(connection, group);
+
             try (final PreparedStatement statement = connection.prepareStatement(DELETE_GROUP)) {
                 statement.setString(1, group.getName());
                 statement.executeUpdate();
             }
+        }
+
+        this.groupsPlus.getGroupRepository().unloadGroup(group);
+    }
+
+    private void deleteAssignedGroups(Connection connection, Group group) throws Exception {
+        try (final PreparedStatement statement = connection.prepareStatement(DELETE_ASSIGNED_GROUPS)) {
+            statement.setString(1, group.getName());
+            statement.executeUpdate();
         }
     }
 
@@ -154,17 +160,6 @@ public class SqlStorage implements StorageImplementation {
         try (final PreparedStatement statement = connection.prepareStatement(SAVE_USER)) {
             statement.setString(1, user.getId().toString());
             statement.executeUpdate();
-        }
-    }
-
-    private boolean existsGroup(Group group) throws SQLException {
-        try (final Connection connection = this.getConnection()) {
-            try (final PreparedStatement statement = connection.prepareStatement(LOAD_SPECIFIC_GROUP)) {
-                statement.setString(1, group.getName());
-                try (final ResultSet set = statement.executeQuery()) {
-                    return set.next();
-                }
-            }
         }
     }
 

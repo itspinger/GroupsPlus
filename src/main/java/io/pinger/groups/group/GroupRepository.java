@@ -28,6 +28,11 @@ public class GroupRepository {
         this.groups.put(group.getName(), group);
     }
 
+    public void unloadGroup(Group group) {
+        this.groups.remove(group.getName());
+        this.groupsPlus.getUserManager().unloadGroupFromUsers(group);
+    }
+
     public Group findGroupByName(String name) {
         return this.groups.get(name);
     }

@@ -1,5 +1,7 @@
 package io.pinger.groups.group;
 
+import java.util.Objects;
+
 public class Group {
     private final String name;
 
@@ -36,5 +38,25 @@ public class Group {
 
     public void setPriority(long priority) {
         this.priority = priority;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || this.getClass() != object.getClass()) {
+            return false;
+        }
+
+        final Group group = (Group) object;
+        return this.priority == group.priority &&
+               Objects.equals(this.name, group.name) &&
+               Objects.equals(this.prefix, group.prefix);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name, this.prefix, this.priority);
     }
 }

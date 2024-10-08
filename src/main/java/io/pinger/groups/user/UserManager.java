@@ -1,6 +1,7 @@
 package io.pinger.groups.user;
 
 import io.pinger.groups.GroupsPlus;
+import io.pinger.groups.group.Group;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,10 @@ public class UserManager {
 
             this.users.put(p.getUniqueId(), user);
         }
+    }
+
+    public void unloadGroupFromUsers(Group group) {
+        this.users.forEach(($, user) -> user.unloadGroupIfMatches(group));
     }
 
     public User getUser(Player player) {

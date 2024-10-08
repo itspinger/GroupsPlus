@@ -3,6 +3,7 @@ package io.pinger.groups.config;
 import io.pinger.groups.GroupsPlus;
 import io.pinger.groups.instance.Instances;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public class MessageConfiguration extends ExternalConfigurationAdapter {
 
@@ -10,6 +11,26 @@ public class MessageConfiguration extends ExternalConfigurationAdapter {
         super(plugin, "messages.yml", true);
 
         Instances.registerWithoutSuper(this);
+    }
+
+    public void sendMessage(CommandSender sender, String key) {
+        if (!this.has(key)) {
+            return;
+        }
+
+        // Get the message
+        final String message = this.of(key);
+        sender.sendMessage(message);
+    }
+
+    public void sendMessage(CommandSender sender, String key, Object... format) {
+        if (!this.has(key)) {
+            return;
+        }
+
+        // Get the message
+        final String message = this.ofFormatted(key, format);
+        sender.sendMessage(message);
     }
 
     public static String color(String message) {

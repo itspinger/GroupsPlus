@@ -1,6 +1,7 @@
 package io.pinger.groups.commands.provider;
 
 import com.jonahseguin.drink.argument.CommandArg;
+import com.jonahseguin.drink.exception.CommandExitMessage;
 import com.jonahseguin.drink.parametric.DrinkProvider;
 import io.pinger.groups.timer.TimeUtil;
 import io.pinger.groups.timer.Timer;
@@ -23,9 +24,16 @@ public class TimeArgumentProvider extends DrinkProvider<Timer> {
     }
 
     @Override
-    public @Nullable Timer provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) {
+    public @Nullable Timer provide(@NotNull CommandArg arg, @NotNull List<? extends Annotation> annotations) throws CommandExitMessage {
         final String timeAsString = arg.get();
-        final long seconds = TimeUtil.parseTimeIntoSeconds(timeAsString);
+        final long seconds;
+
+        try {
+            seconds = TimeUtil.parseTimeIntoSeconds(timeAsString);
+        } catch (Exception e) {
+            throw new CommandExitMessage("Failed to parse time from string " + timeAsString);
+        }
+
         final long milliseconds = TimeUnit.SECONDS.toMillis(seconds);
         return Timer.builder().withMilliseconds(milliseconds).build();
     }

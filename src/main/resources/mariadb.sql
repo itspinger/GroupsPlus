@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS gp_users(
 
 CREATE TABLE IF NOT EXISTS gp_groups(
     `name` VARCHAR(64) PRIMARY KEY NOT NULL,
-    `prefix` VARCHAR(20) NOT NULL,
+    `prefix` VARCHAR(64) NOT NULL,
     `priority` BIGINT NOT NULL
 );
 
