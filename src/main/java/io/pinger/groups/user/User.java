@@ -3,6 +3,7 @@ package io.pinger.groups.user;
 import io.pinger.groups.config.MessageConfiguration;
 import io.pinger.groups.group.AssignedGroup;
 import io.pinger.groups.group.Group;
+import io.pinger.groups.group.GroupPriorityComparator;
 import io.pinger.groups.instance.Instances;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,14 @@ public class User {
 
     public User(UUID id) {
         this(id, new ArrayList<>());
+    }
+
+    public String getHighestGroupPrefix(String defaultPrefix) {
+        return this.getActiveGroups()
+            .stream()
+            .min(new GroupPriorityComparator())
+            .map(Group::getPrefix)
+            .orElse(defaultPrefix);
     }
 
     public void removeAssignedGroup(AssignedGroup group) {
@@ -48,6 +57,10 @@ public class User {
 
     public List<AssignedGroup> getActiveAssignedGroups() {
         return this.assignedGroups.stream().filter(AssignedGroup::isActive).toList();
+    }
+
+    public boolean hasGroup(Group group) {
+        return this.getActiveGroups().contains(group);
     }
 
     public List<Group> getActiveGroups() {

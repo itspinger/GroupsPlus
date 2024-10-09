@@ -57,7 +57,7 @@ public class Storage {
         });
     }
 
-    public CompletableFuture<Group> createNewGroup(@NotNull String name) {
+    public CompletableFuture<Group> getOrCreateGroup(@NotNull String name) {
         return this.future(() -> this.implementation.createNewGroup(name));
     }
 

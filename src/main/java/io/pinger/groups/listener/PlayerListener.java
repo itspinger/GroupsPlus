@@ -2,7 +2,9 @@ package io.pinger.groups.listener;
 
 import io.pinger.groups.GroupsPlus;
 import io.pinger.groups.group.AssignedGroup;
+import io.pinger.groups.group.Group;
 import io.pinger.groups.group.GroupPriorityComparator;
+import io.pinger.groups.logger.PluginLogger;
 import io.pinger.groups.user.User;
 import io.pinger.groups.util.Text;
 import java.util.UUID;
@@ -15,19 +17,37 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerListener implements Listener {
     private final GroupsPlus groupsPlus;
+    private final PluginLogger logger;
 
     public PlayerListener(GroupsPlus groupsPlus) {
         this.groupsPlus = groupsPlus;
+        this.logger = groupsPlus.getPluginLogger();
     }
 
     @EventHandler
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
         final UUID uuid = event.getUniqueId();
-        final User user;
         if (!this.groupsPlus.isDatabaseEnabled()) {
-            user = new User(uuid);
-        } else {
-            user = this.groupsPlus.getStorage().loadUser(uuid).join();
+            this.groupsPlus.getUserManager().getUsers().put(uuid, new User(uuid));
+            return;
+        }
+
+        final User user = this.groupsPlus.getStorage().loadUser(uuid).join();
+        if (user == null) {
+            return;
+        }
+
+        final Group defaultGroup = this.groupsPlus.getGroupRepository().getDefaultGroup();
+        if (defaultGroup == null) {
+            return;
+        }
+
+        if (!user.hasGroup(defaultGroup)) {
+            try {
+                this.groupsPlus.getStorage().addGroupToUser(user, defaultGroup, -1).get();
+            } catch (Exception e) {
+                this.logger.error("Failed to add default group to user ", e);
+            }
         }
 
         this.groupsPlus.getUserManager().getUsers().put(uuid, user);
@@ -46,16 +66,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final AssignedGroup highestGroup = user.getActiveAssignedGroups()
-            .stream()
-            .min(new GroupPriorityComparator())
-            .orElse(null);
-
-        format = format.replace("{player}", player.getName());
-
-        if (highestGroup != null) {
-            format = format.replace("{highest_group_prefix}", highestGroup.getGroup().getPrefix());
-        }
+        format = format
+            .replace("{player}", player.getName())
+            .replace("{highest_group_prefix}", user.getHighestGroupPrefix(""));
 
         event.setJoinMessage(Text.colorize(format));
     }
@@ -73,18 +86,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final AssignedGroup highestGroup = user.getActiveAssignedGroups()
-            .stream()
-            .min(new GroupPriorityComparator())
-            .orElse(null);
-
         format = format
             .replace("{player}", player.getName())
-            .replace("{message}", "%2$s");
-
-        if (highestGroup != null) {
-            format = format.replace("{highest_group_prefix}", highestGroup.getGroup().getPrefix());
-        }
+            .replace("{message}", "%2$s")
+            .replace("{highest_group_prefix}", user.getHighestGroupPrefix(""));
 
         event.setFormat(Text.colorize(format));
     }

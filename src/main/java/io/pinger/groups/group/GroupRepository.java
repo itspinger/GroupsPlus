@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public class GroupRepository {
     private final GroupsPlus groupsPlus;
     private final Map<String, Group> groups;
+
+    private Group defaultGroup;
 
     public GroupRepository(GroupsPlus groupsPlus) {
         this.groupsPlus = groupsPlus;
@@ -35,5 +38,14 @@ public class GroupRepository {
 
     public Group findGroupByName(String name) {
         return this.groups.get(name);
+    }
+
+    public void setDefaultGroup(Group defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
+    @Nullable
+    public Group getDefaultGroup() {
+        return this.defaultGroup;
     }
 }

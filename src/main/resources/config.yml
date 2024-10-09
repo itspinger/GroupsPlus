@@ -40,10 +40,15 @@ database:
     # Default: 1800000 (30 minutes)
     maximum-lifetime: 1800000
 
-## The format for join message
+# The format for join message
 # {highest_group_prefix} - This placeholder will be replaced with the prefix of the group with the most priority for the player
 # {player} - This placeholder will be replaced with the player name
-join-message: "{highest_group_prefix} &f{player} &ehas joined the server"
+join-message: "{highest_group_prefix}{player} &fhas joined the server"
 
-## Chat format for the plugin
-chat-format: "{highest_group_prefix} &f{player}&b: &f{message}"
+# Chat format for the plugin
+chat-format: "{highest_group_prefix}{player}&b: &f{message}"
+
+# Default rank to give to player once they join the server
+# If the rank with this name doesn't exist it will automatically be created
+# If you don't want this feature, remove this line, and the user won't be given a default rank
+default-rank: "Default"

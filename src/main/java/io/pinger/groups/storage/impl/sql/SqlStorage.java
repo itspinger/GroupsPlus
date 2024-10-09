@@ -90,6 +90,24 @@ public class SqlStorage implements StorageImplementation {
     }
 
     @Override
+    public Group loadGroup(String name) throws Exception {
+        try (final Connection connection = this.getConnection()) {
+            try (final PreparedStatement statement = connection.prepareStatement(LOAD_SPECIFIC_GROUP)) {
+                statement.setString(1, name);
+                try (final ResultSet set = statement.executeQuery()) {
+                    if (set.next()) {
+                        return this.loadGroup(set);
+                    } else {
+                        final Group group = this.createGroup(connection, new Group(name));
+                        this.groupsPlus.getGroupRepository().addGroup(group);
+                        return group;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void loadAllGroups() throws SQLException {
         final Map<String, Group> loadedGroups = new HashMap<>();
         try (final Connection connection = this.getConnection()) {

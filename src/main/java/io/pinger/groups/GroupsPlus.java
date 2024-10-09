@@ -5,6 +5,7 @@ import com.jonahseguin.drink.Drink;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.pinger.groups.commands.GroupManagerCommand;
 import io.pinger.groups.commands.GroupsCommand;
+import io.pinger.groups.commands.ShowGroupsCommand;
 import io.pinger.groups.commands.provider.GroupProvider;
 import io.pinger.groups.commands.provider.TimeArgumentProvider;
 import io.pinger.groups.commands.provider.UserProvider;
@@ -52,6 +53,7 @@ public class GroupsPlus extends JavaPlugin {
         this.userManager = new UserManager(this);
 
         this.loadAllGroups();
+        this.createDefaultGroup();
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         this.registerCommands();
@@ -62,6 +64,23 @@ public class GroupsPlus extends JavaPlugin {
         if (this.storage != null) {
             this.storage.shutdown();
         }
+    }
+
+    private void createDefaultGroup() {
+        final String rank = this.getConfig().getString("default-rank");
+        if (rank == null) {
+            return;
+        }
+
+        final Group group;
+        try {
+            group = this.getStorage().getOrCreateGroup(rank).get();
+        } catch (Exception e) {
+            this.logger.error("Failed to create default group ", e);
+            return;
+        }
+
+        this.groupRepository.setDefaultGroup(group);
     }
 
     private void loadAllGroups() {
@@ -84,6 +103,7 @@ public class GroupsPlus extends JavaPlugin {
         service.bind(Group.class).toProvider(new GroupProvider(this));
         service.bind(Timer.class).toProvider(new TimeArgumentProvider());
         service.bind(User.class).toProvider(new UserProvider(this));
+        service.register(new ShowGroupsCommand(this), "showgroups");
         service.register(new GroupManagerCommand(this), "groupmanager", "gm");
         service.register(new GroupsCommand(this), "groups");
         service.registerCommands();

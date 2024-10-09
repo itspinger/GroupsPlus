@@ -15,6 +15,8 @@ public interface StorageImplementation {
 
     void saveUser(User user) throws Exception;
 
+    Group loadGroup(String name) throws Exception;
+
     void loadAllGroups() throws Exception;
 
     void addGroupToUser(User user, Group group, long expiresAt) throws Exception;

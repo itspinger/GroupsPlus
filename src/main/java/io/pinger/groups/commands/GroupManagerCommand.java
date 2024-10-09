@@ -40,7 +40,7 @@ public class GroupManagerCommand {
         }
 
         try {
-            this.groupsPlus.getStorage().createNewGroup(name).get();
+            this.groupsPlus.getStorage().getOrCreateGroup(name).get();
         } catch (Exception e) {
             this.messagesYml.sendMessage(sender, "group.create-failed");
             this.logger.error("Failed to create group with name {}, error {}", name, e);

@@ -2,10 +2,10 @@ package io.pinger.groups.group;
 
 import java.util.Comparator;
 
-public class GroupPriorityComparator implements Comparator<AssignedGroup> {
+public class GroupPriorityComparator implements Comparator<Group> {
 
     @Override
-    public int compare(AssignedGroup a, AssignedGroup b) {
+    public int compare(Group a, Group b) {
         return Long.compare(b.getPriority(), a.getPriority());
     }
 }

@@ -10,7 +10,7 @@ public class Group {
 
     public Group(String name) {
         this.name = name;
-        this.prefix = name;
+        this.prefix = "&e[" + name + "]";
         this.priority = 1L;
     }
 
