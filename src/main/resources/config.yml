@@ -41,3 +41,9 @@ database:
     maximum-lifetime: 1800000
 
 ## The format for join message
+# {highest_group_prefix} - This placeholder will be replaced with the prefix of the group with the most priority for the player
+# {player} - This placeholder will be replaced with the player name
+join-message: "{highest_group_prefix} &f{player} &ehas joined the server"
+
+## Chat format for the plugin
+chat-format: "{highest_group_prefix} &f{player}&b: &f{message}"

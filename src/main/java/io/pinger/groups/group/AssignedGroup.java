@@ -49,4 +49,8 @@ public class AssignedGroup {
     public Group getGroup() {
         return this.group;
     }
+
+    public long getPriority() {
+        return this.group.getPriority();
+    }
 }
