@@ -15,7 +15,10 @@ import io.pinger.groups.group.Group;
 import io.pinger.groups.group.GroupRepository;
 import io.pinger.groups.instance.Instances;
 import io.pinger.groups.listener.PlayerListener;
+import io.pinger.groups.listener.SignListener;
 import io.pinger.groups.logger.SpigotPluginLogger;
+import io.pinger.groups.sign.SignManager;
+import io.pinger.groups.sign.SignUpdateTask;
 import io.pinger.groups.storage.Storage;
 import io.pinger.groups.storage.StorageFactory;
 import io.pinger.groups.storage.config.StorageConfig;
@@ -28,12 +31,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class GroupsPlus extends JavaPlugin {
     private MessageConfiguration messageConfiguration;
     private GroupRepository groupRepository;
+    private SignManager signManager;
     private UserManager userManager;
     private SpigotPluginLogger logger;
     private Storage storage;
@@ -51,12 +56,19 @@ public class GroupsPlus extends JavaPlugin {
         this.groupRepository = new GroupRepository(this);
         this.messageConfiguration = new MessageConfiguration(this);
         this.userManager = new UserManager(this);
+        this.signManager = new SignManager();
 
         this.loadAllGroups();
         this.createDefaultGroup();
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        final PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(new PlayerListener(this), this);
+        pluginManager.registerEvents(new SignListener(this), this);
+
         this.registerCommands();
+
+        // Run sign task every tick
+        this.getServer().getScheduler().runTaskTimer(this, new SignUpdateTask(this), 1L, 10L);
     }
 
     @Override
@@ -135,6 +147,11 @@ public class GroupsPlus extends JavaPlugin {
     @NotNull
     public UserManager getUserManager() {
         return this.userManager;
+    }
+
+    @NotNull
+    public SignManager getSignManager() {
+        return this.signManager;
     }
 
     private void addDefaultConfig() {
