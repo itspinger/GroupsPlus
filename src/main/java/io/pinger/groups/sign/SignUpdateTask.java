@@ -39,12 +39,10 @@ public class SignUpdateTask implements Runnable {
     private void processSign(User user, Sign sign) {
         for (final Side side : Side.values()) {
             final SignSide signSide = sign.getSide(side);
-            final String[] lines = signSide.getLines();
-
             boolean signModified = false;
 
             for (int i = 0; i < signSide.getLines().length; i++) {
-                final String line = lines[i];
+                final String line = signSide.getLine(i);
                 if (this.signManager.shouldReplaceLine(line)) {
                     signSide.setLine(i, this.signManager.replaceLine(user, line));
                     signModified = true;
