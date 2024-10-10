@@ -4,7 +4,6 @@ public enum StorageType {
 
     MARIADB("mariadb"),
     MYSQL("mysql"),
-    POSTGRESQL("postgresql"),
     UNKNOWN("unknown");
 
     private final String identifier;
